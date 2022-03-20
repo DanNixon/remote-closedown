@@ -1,0 +1,24 @@
+tx_guard_time = 1000
+
+[mqtt]
+broker = "tcp://broker.hivemq.com"
+client_id = "remote-closedown"
+status_topic = "repeater-closedown/mb7pmf"
+command_topic = "repeater-closedown/mb7pmf/command"
+username = "mb7pmf"
+
+[tx_power_enable]
+number = 22
+inverted = true
+
+[tx_power_status]
+number = 23
+inverted = true
+
+[ptt_enable]
+number = 27
+inverted = true
+
+[ptt_status]
+number = 24
+inverted = true
