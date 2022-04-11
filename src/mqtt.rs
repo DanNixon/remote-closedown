@@ -1,9 +1,10 @@
 use crate::{
     config::Mqtt,
     event::{Event, MqttMessageEvent},
+    schema::{Response, Status},
 };
 use anyhow::Result;
-use paho_mqtt::{AsyncClient, ConnectOptionsBuilder, CreateOptionsBuilder};
+use paho_mqtt::{AsyncClient, ConnectOptionsBuilder, CreateOptionsBuilder, Message};
 use std::env;
 use tokio::{
     sync::broadcast::Sender,
@@ -31,6 +32,14 @@ pub(crate) async fn run(
             ConnectOptionsBuilder::new()
                 .user_name(&config.username)
                 .password(password)
+                .will_message(Message::new(
+                    config.status_topic.as_str(),
+                    serde_json::to_string(&Response::new(
+                        Status::default(),
+                        Some("Station controller has gone offline".to_string()),
+                    ))?,
+                    0,
+                ))
                 .finalize(),
         )
         .wait()?;

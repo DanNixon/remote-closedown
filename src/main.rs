@@ -62,8 +62,12 @@ async fn main() -> Result<()> {
         })?);
     }
 
-    tx.send(Event::SetTxPowerEnable(false))?;
-    tx.send(Event::SetPttEnable(false))?;
+    send_event!(tx, Event::SetTxPowerEnable(false));
+    send_event!(tx, Event::SetPttEnable(false));
+    crate::send_event!(
+        tx,
+        Event::SendStatus(Some("Station controller is now online".to_string()))
+    );
 
     match signal::ctrl_c().await {
         Ok(()) => {}
