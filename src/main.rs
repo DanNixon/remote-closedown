@@ -20,7 +20,7 @@ macro_rules! send_event {
     };
 }
 
-/// A bridge between Matrix and MQTT
+/// Simple tool used to kill transmission from a remote amateur radio station, gateway or repeater.
 #[derive(Clone, Debug, Parser)]
 struct Cli {
     /// MQTT password
