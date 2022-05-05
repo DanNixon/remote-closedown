@@ -22,6 +22,8 @@ pub(crate) struct Mqtt {
 
     #[serde(default)]
     pub username: String,
+    #[serde(default)]
+    pub password: String,
 
     pub status_topic: String,
     pub command_topic: String,

@@ -23,10 +23,6 @@ macro_rules! send_event {
 /// Simple tool used to kill transmission from a remote amateur radio station, gateway or repeater.
 #[derive(Clone, Debug, Parser)]
 struct Cli {
-    /// MQTT password
-    #[clap(long, env = "MQTT_PASSWORD", default_value = "")]
-    mqtt_password: String,
-
     /// Path to configuration file
     #[clap(long, env = "CONFIG_FILE", default_value = "./config.toml")]
     config_file: String,
@@ -46,7 +42,7 @@ async fn main() -> Result<()> {
 
     let mut tasks = vec![
         processing::run(tx.clone(), config.clone())?,
-        mqtt::run(tx.clone(), &config.mqtt, &args.mqtt_password).await?,
+        mqtt::run(tx.clone(), &config.mqtt).await?,
         output_task::run(tx.clone(), &config)?,
     ];
 

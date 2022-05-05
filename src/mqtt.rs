@@ -12,11 +12,7 @@ use tokio::{
     time::{self, Duration},
 };
 
-pub(crate) async fn run(
-    tx: Sender<Event>,
-    config: &Mqtt,
-    password: &str,
-) -> Result<JoinHandle<()>> {
+pub(crate) async fn run(tx: Sender<Event>, config: &Mqtt) -> Result<JoinHandle<()>> {
     let mut client = AsyncClient::new(
         CreateOptionsBuilder::new()
             .server_uri(&config.broker)
@@ -31,7 +27,7 @@ pub(crate) async fn run(
         .connect(
             ConnectOptionsBuilder::new()
                 .user_name(&config.username)
-                .password(password)
+                .password(&config.password)
                 .will_message(Message::new(
                     config.status_topic.as_str(),
                     serde_json::to_string(&Response::new(
