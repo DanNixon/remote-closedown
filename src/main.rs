@@ -22,6 +22,7 @@ macro_rules! send_event {
 
 /// Simple tool used to kill transmission from a remote amateur radio station, gateway or repeater.
 #[derive(Clone, Debug, Parser)]
+#[clap(author, version, about, long_about = None)]
 struct Cli {
     /// Path to configuration file
     #[clap(long, env = "CONFIG_FILE", default_value = "./config.toml")]
