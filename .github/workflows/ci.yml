@@ -2,7 +2,12 @@
 name: CI
 
 on:
-  - push
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  pull_request:
 
 jobs:
   formatting-and-quality:
@@ -31,9 +36,9 @@ jobs:
       - name: Build and Test
         run: cargo test
 
-  cross-builds:
+  release-builds:
     name: Build
-    if: ${{ github.ref_name == 'main' || github.ref_type == 'tag' }}
+    if: ${{ github.ref_type == 'tag' }}
     needs:
       - build-and-test
       - formatting-and-quality
@@ -53,10 +58,29 @@ jobs:
 
       - name: Build
         id: cross-build
-        run: "cross build --release --target ${{ matrix.platform }}"
+        run: |
+          cross build --release --target ${{ matrix.platform }}
+          cp "target/${{ matrix.platform }}/release/remote-closedown" "remote-closedown-${{ matrix.platform }}"
 
       - name: Store binary
         uses: actions/upload-artifact@v3
         with:
           name: "remote-closedown-${{ matrix.platform }}"
-          path: "target/${{ matrix.platform }}/release/remote-closedown"
+          path: "remote-closedown-${{ matrix.platform }}"
+
+  release:
+    name: Release
+    if: ${{ github.ref_type == 'tag' }}
+    needs:
+      - release-builds
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download binaries
+        uses: actions/download-artifact@v3
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: remote-closedown-*/remote-closedown-*
+          fail_on_unmatched_files: true
