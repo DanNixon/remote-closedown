@@ -3,7 +3,7 @@ use crate::{
     event::{Event, MqttMessageEvent},
     schema::{Response, Status},
 };
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use paho_mqtt::{AsyncClient, ConnectOptionsBuilder, CreateOptionsBuilder, Message};
 use std::env;
 use tokio::{
@@ -66,12 +66,38 @@ pub(crate) async fn run(tx: Sender<Event>, config: &Mqtt) -> Result<JoinHandle<(
                 }
             }
 
-            if let Ok(Some(msg)) = stream.try_recv() {
-                log::info! {"Received message on topic \"{}\"", msg.topic()};
-                crate::send_event!(tx, Event::MqttMessageReceive(MqttMessageEvent::from(msg)));
+            match stream.try_recv() {
+                Ok(Some(msg)) => {
+                    log::info! {"Received message on topic \"{}\"", msg.topic()};
+                    crate::send_event!(tx, Event::MqttMessageReceive(MqttMessageEvent::from(msg)));
+                }
+                Ok(None) => {
+                    if let Err(e) = try_reconnect(&client).await {
+                        log::error!("Failed to reconnect: {}", e);
+                        tx.send(Event::Exit).unwrap();
+                    }
+                }
+                Err(_) => {}
             }
 
             beat.tick().await;
         }
     }))
+}
+
+async fn try_reconnect(c: &AsyncClient) -> Result<()> {
+    for i in 0..300 {
+        log::info!("Attempting reconnection {}...", i);
+        match c.reconnect().await {
+            Ok(_) => {
+                log::info!("Reconnection successful");
+                return Ok(());
+            }
+            Err(e) => {
+                log::error!("Reconnection failed: {}", e);
+            }
+        }
+        tokio::time::sleep(Duration::from_secs(1)).await;
+    }
+    Err(anyhow!("Failed to reconnect to broker"))
 }
