@@ -24,11 +24,21 @@ pub(crate) async fn run(tx: Sender<Event>, config: &Mqtt) -> Result<JoinHandle<(
 
     let stream = client.get_stream(25);
 
-    let command_topic = config.command_topic.clone();
-    client.set_connected_callback(move |c| {
-        log::info!("Connected to broker");
-        c.subscribe(&command_topic.clone(), 2);
-    });
+    {
+        let command_topic = config.command_topic.clone();
+        let tx = tx.clone();
+
+        client.set_connected_callback(move |c| {
+            log::info!("Connected to broker");
+
+            c.subscribe(&command_topic.clone(), 2);
+
+            crate::send_event!(
+                tx,
+                Event::SendStatus(Some("Station controller is now online".to_string()))
+            );
+        });
+    }
 
     let response = client
         .connect(
