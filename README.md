@@ -1,4 +1,4 @@
-# Amateur Radio Station Remote Closedown Controller [![CI](https://github.com/DanNixon/remote-closedown/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/DanNixon/remote-closedown/actions/workflows/ci.yml)
+# Amateur Radio Station Remote Closedown Controller [![CI](https://github.com/DanNixon/remote-closedown/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/DanNixon/remote-closedown/actions/workflows/ci.yml) [![dependency status](https://deps.rs/repo/github/dannixon/remote-closedown/status.svg)](https://deps.rs/repo/github/dannixon/remote-closedown)
 
 Simple tool used to kill transmission from a remote amateur radio station, gateway or repeater.
 
