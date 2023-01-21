@@ -31,7 +31,7 @@ pub(crate) async fn run(tx: Sender<Event>, config: &Mqtt) -> Result<JoinHandle<(
         client.set_connected_callback(move |c| {
             log::info!("Connected to broker");
 
-            c.subscribe(&command_topic.clone(), 2);
+            c.subscribe(command_topic.clone(), 2);
 
             crate::send_event!(
                 tx,
