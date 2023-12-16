@@ -63,7 +63,7 @@ jobs:
           cp "target/${{ matrix.platform }}/release/remote-closedown" "remote-closedown-${{ matrix.platform }}"
 
       - name: Store binary
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: "remote-closedown-${{ matrix.platform }}"
           path: "remote-closedown-${{ matrix.platform }}"
